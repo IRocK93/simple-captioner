@@ -1,10 +1,16 @@
 # Simple Captioner
 
+
+A simple local image and video captioning app with a Gradio UI, based on the original o-l-l-i/simple-captioner project and adapted for my own workflow.
+This fork is currently a personal independent version that preserves the original project name while extending the current app behavior around with multi-pass captioning, merge-stage workflow, raw-caption auditing, defaults management, simpler model download and integration, VRAM unload improvements, Llava (LLama) model support, SFW/NSFW support.
+I currently run this project on my machine by following the setup and run instructions from the original upstream repository.
+
 A minimal media captioning tool powered by **[Qwen2.5/3 VL Instruct and Qwen3.5 4B/9B](https://huggingface.co/Qwen/)** from Alibaba Group.
 
 This tool uses a Gradio UI to batch process folders of **images and videos** and generate descriptive captions.
 
 Written by [Olli S.](https://github.com/o-l-l-i)
+For now, installation should be treated as upstream-first: follow the original repository’s setup instructions unless I later publish fork-specific install steps.
 
 ---
 
@@ -12,25 +18,33 @@ Written by [Olli S.](https://github.com/o-l-l-i)
 
 ## ✨ Features
 
-Version 1.0.2.1
+Status
+Current working version: v1.2.
 
-- ✅ Uses `Qwen2.5/3 VL Instruct and Qwen3.5 4B/9B` for high-quality understanding
-- ✅ Support for:
-  - Qwen/Qwen3.5-4B
-  - Qwen/Qwen3.5-9B
-  - Qwen/Qwen3-VL-4B-Instruct
-  - Qwen/Qwen3-VL-8B-Instruct
-  - Qwen/Qwen2.5-VL-3B-Instruct
-  - Qwen/Qwen2.5-VL-7B-Instruct
-- ✅ Flash attention 2 support (with toggle)
-- ✅ Quantization via BitsAndBytes (None / 8-bit / 4-bit)
-- ✅ Caption multiple images or videos from a selected folder
-- ✅ Sub-folder support
-- ✅ Supports prompt customization
-- ✅ "Summary Mode" and "One-Sentence Mode" options for different caption styles
-- ✅ Can skip already-captioned images
-- ✅ Image previews with real-time progress
-- ✅ Abort long runs safely
+This version is focused on practical dataset captioning workflows rather than a minimal single-pass caption tool.
+
+
+
+What this version adds:
+
+✅Single mode and Multi-Pass Folder mode are both present.
+
+✅Supported attention implementations include eager, and flash_attention_2 is used when available.
+
+✅Raw caption generation and final merged caption output are separated cleanly.
+
+✅Merge prompt reset and merge prompt version tracking are built into the app logic.
+
+✅Audit files can be written alongside raw caption artifacts for traceability.
+
+✅Raw-caption storage in a dedicated _captions_raw subfolder while saving the final consolidated caption as image001.txt directly next to the source image for downstream processing convenience.
+
+✅Existing model choices in v1.2 include Qwen VL variants, Disty0 variants, Huihui variants, Prithiv variants, and JoyCaption/LLaVA variants.
+
+✅Optional advanced dual-load caching behavior with a two-model limit for faster switching in multi-pass workflows.
+
+✅Preflight reporting, progress tracking, abort handling, and optional audit output for reviewing source captions, failed combinations, and merged results.
+
 
 ---
 
@@ -47,7 +61,7 @@ Version 1.0.2.1
 1. **Clone the repository**:
 
    ```bash
-   git clone https://github.com/o-l-l-i/simple-captioner.git
+   git clone https://github.com/IRocK93/simple-captioner.git
    cd simple-captioner
 
 2. **Create a virtual environment (optional but recommended)**:
@@ -113,7 +127,8 @@ Version 1.0.2.1
 
 ## Model Files
 
-When you run the app for the first time, the model (Qwen/Qwen2.5-VL-7B-Instruct) is automatically downloaded from Hugging Face. This download is cached locally, so subsequent runs are much faster and offline-compatible.
+When you run the app for the first time, the default model is automatically downloaded from Hugging Face "prithivMLmods/Qwen3-VL-8B-Abliterated-Caption-it". This download is cached locally, so subsequent runs are much faster and offline-compatible.
+
 
 By default, Hugging Face stores downloaded models in:
 
@@ -121,7 +136,7 @@ By default, Hugging Face stores downloaded models in:
 ```bash
 Linux/macOS: ~/.cache/huggingface/
 
-Windows: C:\Users\<YourUsername>\.cache\huggingface\
+Windows: C:\Users\<YourUsername>\.cache\huggingface\hub\
 ```
 
 You can inspect, manage, or clear this cache manually, or change the location by setting the HF_HOME environment variable:
@@ -175,30 +190,14 @@ For better performance, [you can try to install decord from source](https://gith
 - On Windows you have to install GPU compatible Torch yourself, get it from here:
   - [https://pytorch.org/get-started/locally/](https://pytorch.org/get-started/locally/)
   - Select a Torch version which matches your CUDA version.
-- If VRAM usage is too high, reduce max_tokens. This is only tested on 3090 and 5090, but I did monitor the VRAM usage.
+- If VRAM usage is too high, reduce max_tokens. This is only tested on 5090, but I did monitor the VRAM usage.
 
 ---
 
 ## Versions
 
-- **1.0.2.1 - 2026-4-1**
-  - Add support for Gradio 6.10.0.
-
-- **1.0.2 - 2026-4-1**
-  - Add support for Qwen 3.5 4B and 9B.
-  - Updated requirements (transformers to >=5.4.0 and bitsandbytes to >=0.46.1)
-
-- **1.0.1 - 2025-10-15**
-  - Model dropdown with multiple model support.
-  - Quantization (None / 8-bit / 4-bit.)
-  - Attention implementation toggle (flash attention 2 supported) + auto-fallback to `eager`
-  - Model is no longer loaded at import; loads via UI or on app UI start.
-  - Defaults to Qwen/Qwen3-VL-8B-Instruct, this can be memory intensive, so use quantization or 4B model.
-  - Improved VRAM cleanup.
-
-- **1.0.0**
-  - Initial release.
-  - Qwen/Qwen2.5-VL-7B-Instruct support for image and video captioning.
+- **1.2 - 2026-4-4**
+  - Stable
 
 ---
 
@@ -211,6 +210,7 @@ If you run into any issues:
 - Please check the console or logs for error messages.
 - Try to use supported media formats as listed.
 - Feel free to report problems or request features via the project’s GitHub Issues page.
+- For now, installation should be treated as upstream-first: follow the original repository’s setup instructions unless I later publish fork-specific install steps.
 
 ---
 
@@ -233,4 +233,4 @@ The only official repository for this project is: 👉 https://github.com/o-l-l-
 
 ## Author
 
-Created by [@o-l-l-i](https://github.com/o-l-l-i)
+IRocK93 (https://github.com/IRocK93/)
