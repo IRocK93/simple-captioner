@@ -3,7 +3,8 @@
 
 A simple local image and video captioning app with a Gradio UI, based on the original o-l-l-i/simple-captioner project and adapted for my own workflow.
 This fork is currently a personal independent version that preserves the original project name while extending the current app behavior around with multi-pass captioning, merge-stage workflow, raw-caption auditing, defaults management, simpler model download and integration, VRAM unload improvements, Llava (LLama) model support, SFW/NSFW support.
-I currently run this project on my machine by following the setup and run instructions from the original upstream repository.
+
+*** I currently run this project on my machine by following the setup and run instructions from the original upstream repository. ***
 
 A minimal media captioning tool powered by **[Qwen2.5/3 VL Instruct and Qwen3.5 4B/9B](https://huggingface.co/Qwen/)** from Alibaba Group.
 
